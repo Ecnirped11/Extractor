@@ -1,22 +1,20 @@
 import os
 
 from dotenv import load_dotenv
-from telegram.ext import (ApplicationBuilder, CommandHandler, MessageHandler,
-                          filters)
+from telegram.ext import (ApplicationBuilder, CommandHandler, MessageHandler,filters)
 
-from extractor.Bot.exhandler import handle_txt_file, start_cmd
+from Extractor.Bot.exhandler import handle_txt_file, start_cmd
 
 load_dotenv()
 
-Access_token = os.getenv("Token")
-
+Acceess_token = os.getenv('Token')
 
 def main():
-    app = ApplicationBuilder().token(Access_token).build()
-    app.add_handler(CommandHandler("start", start_cmd))
-    app.add_handler(MessageHandler(filters.Document.ALL, handle_txt_file))
-    app.run_polling()
-
+   app = ApplicationBuilder().token(Acceess_token).build()
+   app.add_handler(CommandHandler("start", start_cmd))
+   app.add_handler(MessageHandler(filters.Document.ALL, handle_txt_file))
+   print('bot starting....')
+   app.run_polling()
 
 if __name__ == "__main__":
-    main()
+   main()
