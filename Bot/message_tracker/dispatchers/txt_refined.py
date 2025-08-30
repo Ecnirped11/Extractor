@@ -2,9 +2,10 @@ import re
 from Extractor.Bot.message_tracker.file_manager.sysfile_editor import FileManager
 
 class RefinedTextHandler:
-    def __init__(self, text: str, command: str) -> str:
+    def __init__(self, text: str, command: str, clear_command: str) -> str:
         self.text = text
         self.resolve_command = command
+        self.clear_command = clear_command
 
 
     def crop_out_content(self) -> str:
@@ -23,8 +24,13 @@ class RefinedTextHandler:
             }
             sys_file = FileManager(extracted_content, None, self.resolve_command)
             sys_file.create_file()
-        elif self.text == self.resolve_command:
+        elif self.text.lower() == self.resolve_command:
             sys_file = FileManager(None, self.text, self.resolve_command)
             sys_file.create_file()
             return sys_file.output_extracted_content()
+        
+        elif self.text.lower() == self.clear_command:
+            sys_file = FileManager(None, None, None)
+            sys_file.clear_file()
+
             

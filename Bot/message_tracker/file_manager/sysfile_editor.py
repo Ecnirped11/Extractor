@@ -63,6 +63,10 @@ class FileManager:
         except Exception as error:
             print(f"Error handling file: {error}")
 
+    def clear_file(self) -> None:
+        with open(self.file_path, "w") as file:
+            pass
+
     def output_extracted_content(self) -> str:
         return self.extracted_content
     
