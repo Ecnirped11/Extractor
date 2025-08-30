@@ -1,6 +1,7 @@
 import os
 from telegram import Update
 import time
+from .message_tracker.dispatchers.txt_refined import RefinedTextHandler
 from telegram.constants import ParseMode
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
 import re
@@ -14,9 +15,14 @@ async def handle_txt_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     document = update.message.document
     caption = update.message.caption
     text = update.message.text
-    
+    RESOLVE_COMMAND = "resolve"
     if text:
-        await update.message.reply_text(text)
+        refined_text = RefinedTextHandler(text, RESOLVE_COMMAND)
+        content = refined_text.crop_out_content()
+        
+        if text == RESOLVE_COMMAND:
+            await update.message.reply_text(content)
+        
     if document:
         if document.mime_type == "text/plain":
             os.makedirs("downloads", exist_ok=True)
@@ -31,13 +37,13 @@ async def handle_txt_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 
                 await update.message.reply_text(response, parse_mode="HTML")
             
-            except Exception as e:  
+            except Exception as e: 
+        
                 await update.message.reply_text(  
                     f"❌ Error reading the file:\n<pre>{e}</pre>", parse_mode=ParseMode.HTML  
                 )
                 os.remove(file_path)
-        else:
-            await update.message.reply_text("❗ Please send a valid .txt file.")
-    
-
-
+            
+            else:
+                await update.message.reply_text("❗ Please send a valid .txt file.")
+            
