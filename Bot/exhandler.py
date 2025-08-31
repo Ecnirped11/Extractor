@@ -3,6 +3,7 @@ from telegram import Update
 import time
 from .message_tracker.dispatchers.txt_refined import RefinedTextHandler
 from telegram.constants import ParseMode
+from telegram.error import TimedOut, NetworkError
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
 import re
 from .dup_extractor.duplicate import DuplicateExtractor
@@ -19,15 +20,17 @@ async def handle_txt_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     RESOLVE_COMMAND = "resolve"
     CLEAR_COMMAND = "clear"
 
-    if text:
-        refined_text = RefinedTextHandler(text, RESOLVE_COMMAND, CLEAR_COMMAND)
-        content = refined_text.crop_out_content()
-        
-        if text.lower() == RESOLVE_COMMAND:
-            await update.message.reply_text(content)
-        elif text.lower() == CLEAR_COMMAND:
-            await update.message.reply_text("✅ File cleared successfully.")
-        
+    try:
+        if text:
+            refined_text = RefinedTextHandler(text, RESOLVE_COMMAND, CLEAR_COMMAND)
+            content = refined_text.crop_out_content()
+            if text.lower() == RESOLVE_COMMAND:
+                await update.message.reply_text(content)
+            elif text.lower() == CLEAR_COMMAND:
+                await update.message.reply_text("✅ File cleared successfully.")
+    except TimedOut:
+           await update.message.reply_text("Error: unstable network..")
+
     if document:
         if document.mime_type == "text/plain":
             os.makedirs("downloads", exist_ok=True)
