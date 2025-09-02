@@ -34,6 +34,7 @@ class RefinedTextHandler:
                 return f"Error occurred: {e}"
 
         elif self.text == self.clear_command:
+            print("is cleared")
             sys_file = FileManager(None, None, None)
             sys_file.clear_file()
 

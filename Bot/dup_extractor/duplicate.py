@@ -92,7 +92,7 @@ class DuplicateExtractor:
                     test_numbers = testing_num["test_num_details"]
                     filtered_test_numbers = chr(10).join(
                         str(num) for num in testing_num["filtered_num_list"]
-                        )
+                    )
                     
                     message += (
                         f"<b>💡 TESTING NUMBER:</b>\n\n<code>{test_numbers}</code>\n\n"
