@@ -5,7 +5,7 @@ from .message_tracker.dispatchers.txt_refined import RefinedTextHandler
 from telegram.constants import ParseMode
 from telegram.error import TimedOut, NetworkError
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
-import re
+
 from .dup_extractor.duplicate import DuplicateExtractor
 
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -44,7 +44,6 @@ async def handle_txt_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 response = duplicate.extractor()
                 
                 await update.message.reply_text(response, parse_mode="HTML")
-            
             except Exception as e: 
         
                 await update.message.reply_text(  
@@ -52,6 +51,6 @@ async def handle_txt_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
                 os.remove(file_path)
             
-            else:
-                await update.message.reply_text("❗ Please send a valid .txt file.")
-            
+        else:
+            await update.message.reply_text("❗ Please send a valid .txt file.")
+        
