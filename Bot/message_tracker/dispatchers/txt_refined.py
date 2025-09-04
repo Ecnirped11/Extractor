@@ -10,7 +10,7 @@ class RefinedTextHandler:
 
     def crop_out_content(self) -> str:
         pattern = re.compile(
-            r"USER:\s*(?P<user>.*)\n\s*SID:\s*(?P<sid>.*)\n\s*PHONE:\s*(?P<phone>.*)\n\s*Message:\s*(?P<message>.*?)(?:\n\s*Image:|$)",
+            r"USER:\s*(?P<user>.*)\n\s*EMAIL:\s*(?P<email>.*)\n\s*SID:\s*(?P<sid>.*)\n\s*PHONE:\s*(?P<phone>.*)\n\s*Message:\s*(?P<message>.*?)(?:\n\s*Image:|$)",
             re.DOTALL
         )
         match = pattern.search(self.text)
@@ -19,7 +19,8 @@ class RefinedTextHandler:
             extracted_content = {
                 "length": match.group("sid").strip(),
                 "username" : match.group("user").strip(),
-                "message" : match.group("message").strip()
+                "message" : match.group("message").strip(),
+                "email"  : match.group("email").strip()
             }
             sys_file = FileManager(extracted_content, None, self.resolve_command)
             sys_file.create_file()

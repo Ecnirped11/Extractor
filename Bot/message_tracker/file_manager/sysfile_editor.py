@@ -14,6 +14,7 @@ class FileManager:
         self.command = command
         self.resolve_command = resolve_command
         self.extracted_content = ""
+    
 
     def enpack_text(self) -> dict:
         try:
@@ -22,7 +23,8 @@ class FileManager:
                 message_content = {
                     "username": text_enpacked["username"],
                     "message": text_enpacked["message"],
-                    "number_length": text_enpacked["length"]
+                    "number_length": text_enpacked["length"],
+                    "mail" : text_enpacked["email"]
                 }
                 return message_content
         except TypeError as err:
@@ -42,11 +44,11 @@ class FileManager:
                     for element_key , element_value in element.items(): 
                         if element_value == key and element["username"] == check_last_index["username"]: 
                             self.total_number += int(element["number_length"]) 
-                            self.extracted_content = f"{check_last_index['username']}[{self.total_number}]\n\n{key}" 
+                            self.extracted_content = f"{check_last_index['username']}[{self.total_number}]\n\n[{check_last_index['mail']}]\n\n{key}" 
                             self.duplicate_message_found = True
             elif not self.duplicate_message_found: 
-                self.extracted_content = f"{check_last_index['username']}[{check_last_index['number_length']}]\n\n{key}"
-            
+                self.extracted_content = f"{check_last_index['username']}[{check_last_index['number_length']}]\n\n[{check_last_index['mail']}]\n\n{key}"
+
     def create_file(self) -> None:
         extracted_message = self.enpack_text()
         try:

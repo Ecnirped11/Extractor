@@ -76,9 +76,14 @@ class DuplicateExtractor:
                     duplicate = chr(10).join(
                         f'{number} appeared {count[str(number)]} times' for number in self.duplicate_number
                     )  
-                    
+
+                    number_length = len(number_list) if len(number_list) > 0 else 0
+
                     message += (
-                        f"<b>📞 PHONE NUMBER LENGTH: {len(number_list)}</b>\n\n"
+                        f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
+                    )
+
+                    message += (
                         f"<b>⚠️ DUPLICATE NUMBER FOUND:</b>\n\n<pre>{duplicate}</pre>\n\n"
                         f"<b>📄 LINE NUMBER:</b>\n\n<pre>{dup_line}</pre>\n\n"
                         f"<b>🔍 DUPLICATE FILTERED NUMBER:</b>\n\n<code>{chr(10).join(str(num) for num in dup_list)}</code>\n\n"
