@@ -90,6 +90,9 @@ class DuplicateExtractor:
                     )
                 else:
                     message += (
+                        f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
+                    )
+                    message += (
                         f"<b>⚠️ DUPLICATE NUMBER FOUND:</b>\n\nNot Found\n\n"
                     )
 
