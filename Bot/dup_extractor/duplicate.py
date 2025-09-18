@@ -62,9 +62,13 @@ class DuplicateExtractor:
             count = dict(Counter(number_list))
             message = ""
             self.duplicate_filter(number_list)
+            
+            number_length = len(number_list) if len(number_list) > 0 else 0
 
             if True:  
-            
+                message += (
+                    f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
+                )
                 if self.duplicates_found:
                     dup_list = list(self.duplicate_number)
                     
@@ -77,21 +81,12 @@ class DuplicateExtractor:
                         f'{number} appeared {count[str(number)]} times' for number in self.duplicate_number
                     )  
 
-                    number_length = len(number_list) if len(number_list) > 0 else 0
-
-                    message += (
-                        f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
-                    )
-
                     message += (
                         f"<b>⚠️ DUPLICATE NUMBER FOUND:</b>\n\n<pre>{duplicate}</pre>\n\n"
                         f"<b>📄 LINE NUMBER:</b>\n\n<pre>{dup_line}</pre>\n\n"
                         f"<b>🔍 DUPLICATE FILTERED NUMBER:</b>\n\n<code>{chr(10).join(str(num) for num in dup_list)}</code>\n\n"
                     )
                 else:
-                    message += (
-                        f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
-                    )
                     message += (
                         f"<b>⚠️ DUPLICATE NUMBER FOUND:</b>\n\nNot Found\n\n"
                     )
