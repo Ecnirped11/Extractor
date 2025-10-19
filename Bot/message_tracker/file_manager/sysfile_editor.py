@@ -1,18 +1,20 @@
 import os
 from collections import Counter
+from ...cloud.firebase import SenderMailDatabaseManager
 import json
 
 class FileManager:
 
-    def __init__(self, refined_text, command, resolve_command):
+    def __init__(self, refined_text, command):
         self.expand_dir = os.path.expanduser("~")
         self.file_path = os.path.join(self.expand_dir,  "extracted_message.txt")
         self.file_content = refined_text
         self.data_list = []
         self.total_number = 0
+        self.user_mail  = None
         self.duplicate_message_found = False
         self.command = command
-        self.resolve_command = resolve_command
+        self.resolve_command = "resolve"
         self.extracted_content = ""
     
 
@@ -29,12 +31,21 @@ class FileManager:
                 return message_content
         except TypeError as err:
             print(err)
-    
+
+    def user_mail_collector(self, check_last_index) -> None:
+        if check_last_index["mail"] is None:
+            data_manager = SenderMailDatabaseManager(None, check_last_index["username"])
+            self.user_mail = data_manager.extract_user_mail()
+        else:
+            self.user_mail = check_last_index["mail"]
+
     def edit_duplicate_message(self,  content_list: list) -> str:
         data = f"[{content_list[0]}]"
         data_output = json.loads(data)
-
         check_last_index = data_output[len(data_output) - 1]
+
+        self.user_mail_collector(check_last_index)
+        
         for item in data_output:
             self.data_list.append(item["message"])
         find_repeated_message = dict(Counter(self.data_list))
@@ -44,10 +55,10 @@ class FileManager:
                     for element_key , element_value in element.items(): 
                         if element_value == key and element["username"] == check_last_index["username"]: 
                             self.total_number += int(element["number_length"]) 
-                            self.extracted_content = f"{check_last_index['username']}[{self.total_number}]\n\n[{check_last_index['mail']}]\n\n{key}" 
+                            self.extracted_content = f"{check_last_index['username']}[{self.total_number}]\n\n[{self.user_mail}]\n\n{key}" 
                             self.duplicate_message_found = True
             elif not self.duplicate_message_found: 
-                self.extracted_content = f"{check_last_index['username']}[{check_last_index['number_length']}]\n\n[{check_last_index['mail']}]\n\n{key}"
+                self.extracted_content = f"{check_last_index['username']}[{check_last_index['number_length']}]\n\n[{self.user_mail}]\n\n{key}"
 
     def create_file(self) -> None:
         extracted_message = self.enpack_text()
