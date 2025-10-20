@@ -29,8 +29,8 @@ class FileManager:
                     "mail" : text_enpacked["email"]
                 }
                 return message_content
-        except TypeError as err:
-            print(err)
+        except TypeError:
+            pass
 
     def user_mail_collector(self, check_last_index) -> None:
         if check_last_index["mail"] is None:
@@ -74,7 +74,7 @@ class FileManager:
                     self.edit_duplicate_message(list_values)
                     
         except Exception as error:
-            print(f"Error handling file: {error}")
+            pass
 
     def clear_file(self) -> None:
         with open(self.file_path, "w") as file:

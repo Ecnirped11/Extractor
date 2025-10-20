@@ -1,6 +1,6 @@
 import re
 from Extractor.Bot.message_tracker.file_manager.sysfile_editor import FileManager
-from telegram.error import BadRequest
+from telegram import error
 from ...cloud.firebase import SenderMailDatabaseManager
 class RefinedTextHandler:
 
@@ -45,10 +45,10 @@ class RefinedTextHandler:
                     sys_file.create_file()
                     return sys_file.output_extracted_content()
                 
-                except BadRequest as e:
-                    return f"Error occurred: {e}"
+                except error.BadRequest:
+                    return f"An error occur: No data in the file to resolve"
             case "clear file":
-                sys_file = FileManager(None, None, None)
+                sys_file = FileManager(None, None)
                 sys_file.clear_file()
 
     

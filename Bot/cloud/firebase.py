@@ -23,7 +23,21 @@ class SenderMailDatabaseManager:
         # Only now get a reference to the database
         self.ref = db.reference("user-data")
         self.data = self.ref.get()
-
+    def is_exist(self) -> bool:
+        for key, user_data in self.data.items():
+            if self.sender_username == user_data["username"]:
+                user_mail = user_data["email"]
+                return (
+                    f"\n\n<b>STATUS</b>: found!\n\n"
+                    f"<b>USERNAME</b>: {self.sender_username}\n\n"
+                    f"<b>EMAIL: </b> [<i>{user_mail}</i>]\n\n"
+                )
+            else:
+                return (
+                    f"\n\n<b>STATUS</b>: not found!\n\n"
+                    f"<b>MESSAGE</b>:couldn't found user [{self.sender_username}] data.\n\n"
+                )
+            
     def check_stored_mail_length(self) -> str:
         mail = [mail for key, mail in self.data.items()]
         return len(mail)
@@ -37,4 +51,3 @@ class SenderMailDatabaseManager:
     
     def push_data_information(self) -> None:
         self.ref.push({"username" : self.sender_username,"email": self.sender_email})
-        print("Message pushed successfully!")

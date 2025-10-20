@@ -3,7 +3,7 @@ from telegram import Update, ReplyKeyboardMarkup
 import time
 from .message_tracker.dispatchers.txt_refined import RefinedTextHandler
 from telegram.constants import ParseMode
-from telegram.error import TimedOut, NetworkError
+from telegram.error import TimedOut, BadRequest
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 )
@@ -15,7 +15,7 @@ class CheetahExtractor:
     def __init__(self, Acceess_token) -> None:   
         self.keyboard = [
             ["resolve", "clear file"],
-            ["Check Total Mail Stored"]
+            ["Check Total Mail Stored", "check user"]
         ]
         self.data_manager = SenderMailDatabaseManager(None, None)
         self.mark_up = ReplyKeyboardMarkup(
@@ -37,6 +37,15 @@ class CheetahExtractor:
 
     async def text_file_editor(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         text = update.message.text
+
+        if context.user_data.get("is_exist"):
+            user_name = update.message.text
+            maiil_database_manager = SenderMailDatabaseManager(None, user_name)
+            context.user_data["is_exist"] = False
+            is_exist = maiil_database_manager.is_exist()
+            await self.request_reply_mesesage(update, is_exist)
+            
+
         try:
             if text:
                 refined_text = RefinedTextHandler(text)
@@ -52,10 +61,15 @@ class CheetahExtractor:
                             update,
                             f"<b>Total user mail stored in database: <i>{mail_length}</i></b>"
                         )
+                    case "check user":
+                        context.user_data["is_exist"] = True
+                        await self.request_reply_mesesage(update, "Enter user the name")
                     case _:
                         return ""
         except TimedOut:
             await update.message.reply_text("Error: unstable network..")
+        except BadRequest:
+            await self.request_reply_mesesage(update, "<b>An error occur due to Bad request</b>")
 
 
     async def sending_number_file_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -12,6 +12,6 @@ def main():
       extractor_bot = CheetahExtractor(Acceess_token)
       extractor_bot.run_application()
    except Exception as error:
-      print(error)
+      pass
 if __name__ == "__main__":
    main()
