@@ -1,6 +1,6 @@
 import os
 from collections import Counter
-from ...cloud.firebase import SenderMailDatabaseManager
+from cloud.firebase import SenderMailDatabaseManager
 import json
 
 class FileManager:

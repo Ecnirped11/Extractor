@@ -1,7 +1,7 @@
 import re
-from Extractor.Bot.message_tracker.file_manager.sysfile_editor import FileManager
+from message_tracker.file_manager.sysfile_editor import FileManager
 from telegram import error
-from ...cloud.firebase import SenderMailDatabaseManager
+from cloud.firebase import SenderMailDatabaseManager
 class RefinedTextHandler:
 
     
@@ -16,11 +16,14 @@ class RefinedTextHandler:
     def dispatch_user_mail(self, extracted_content: dict, data: dict) -> dict:
         previous_data = self.sender_mails.check_existing_data()
         
-        if not data["email"] is None and not extracted_content["email"] in previous_data:
+        if extracted_content["email"] not in previous_data and extracted_content["email"] is not None:
             user_mail_dispatcher = SenderMailDatabaseManager(
                 extracted_content["email"], extracted_content["username"]
             )
             user_mail_dispatcher.push_data_information()
+            print(True)
+        else:
+            print(False)
         
 
     def crop_out_content(self) -> str:

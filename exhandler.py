@@ -1,14 +1,14 @@
 import os
 from telegram import Update, ReplyKeyboardMarkup
 import time
-from .message_tracker.dispatchers.txt_refined import RefinedTextHandler
+from message_tracker.dispatchers.txt_refined import RefinedTextHandler
 from telegram.constants import ParseMode
 from telegram.error import TimedOut, BadRequest
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 )
-from .dup_extractor.duplicate import DuplicateExtractor
-from .cloud.firebase import SenderMailDatabaseManager
+from dup_extractor.duplicate import DuplicateExtractor
+from cloud.firebase import SenderMailDatabaseManager
 
 class CheetahExtractor:
 

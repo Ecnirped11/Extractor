@@ -1,7 +1,7 @@
 from collections import Counter
 import os
 import re
-from Extractor.Bot.utils import normalise
+from utils import normalise
 
 class DuplicateExtractor:
     

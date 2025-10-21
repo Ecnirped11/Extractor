@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from .Bot.exhandler import CheetahExtractor
+from exhandler import CheetahExtractor
 
 load_dotenv()
 
