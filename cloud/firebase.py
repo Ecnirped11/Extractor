@@ -21,6 +21,8 @@ class SenderMailDatabaseManager:
         auth_json = os.getenv("FIREBASE_AUTH_KEY")
         auth_dict = json.loads(auth_json)
 
+        auth_dict["private_key"] = auth_dict["private_key"].replace("\\n", "\n")
+
         if not firebase_admin._apps:
             cred = credentials.Certificate(auth_dict)
             firebase_admin.initialize_app(cred, {
