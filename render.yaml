@@ -1,5 +1,5 @@
 services:
-  - type: web
+  - type: Background Worker
     name: cheetah-extractor
     env: python
     plan: free
