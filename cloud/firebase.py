@@ -1,5 +1,7 @@
 import os
 import firebase_admin
+from dotenv import load_dotenv
+import json
 from firebase_admin import credentials, db
 
 class SenderMailDatabaseManager:
@@ -9,14 +11,18 @@ class SenderMailDatabaseManager:
         self.sender_email = sender_email
         self.sender_username = sender_username
 
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        auth_file = os.path.join(script_dir, "serviceAccountKey.json")
+        # script_dir = os.path.dirname(os.path.abspath(__file__))
+        # auth_file = os.path.join(script_dir, "serviceAccount.json")
 
-        if not os.path.exists(auth_file):
-            raise FileNotFoundError(f"Cannot find {auth_file}!")
+        # if not os.path.exists(auth_file):
+        #     raise FileNotFoundError(f"Cannot find {auth_file}!")
         # Initialize Firebase if not already initialized
+        load_dotenv()
+        auth_json = os.getenv("FIREBASE_AUTH_KEY")
+        auth_dict = json.loads(auth_json)
+
         if not firebase_admin._apps:
-            cred = credentials.Certificate(auth_file)
+            cred = credentials.Certificate(auth_dict)
             firebase_admin.initialize_app(cred, {
                 'databaseURL': 'https://data-67a98-default-rtdb.firebaseio.com/'
             })
