@@ -1,28 +1,29 @@
 import os
-import threading
-from flask import Flask
+import logging
 from dotenv import load_dotenv
 from exhandler import CheetahExtractor
 
 load_dotenv()
 
-ACCESS_TOKEN = os.getenv("Token")
+ACCESS_TOKEN = os.getenv('Token')
 
-# Create a small web server (Render requires this)
-app = Flask(__name__)
+# Set up logging to see errors on Render
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
-@app.route('/')
-def home():
-    return "Bot is running!"
+def main():
+    if not ACCESS_TOKEN:
+        logging.error("Bot token not found! Make sure it's in .env as 'Token'")
+        return
 
-def run_bot():
-    extractor_bot = CheetahExtractor(ACCESS_TOKEN)
-    extractor_bot.run_application()
+    try:
+        extractor_bot = CheetahExtractor(ACCESS_TOKEN)
+        # Keep the bot running; assuming run_application() uses run_polling() internally
+        extractor_bot.run_application()
+    except Exception as error:
+        logging.exception("Bot failed to start:")
 
 if __name__ == "__main__":
-    # Run bot in background
-    threading.Thread(target=run_bot).start()
-
-    # Bind to Render port
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    main()
