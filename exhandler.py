@@ -85,7 +85,7 @@ class CheetahExtractor:
                 await file.download_to_drive(file_path)  
         
                 try:  
-                    duplicate = (caption ,file_path)
+                    duplicate = DuplicateExtractor(caption ,file_path)
                     response = duplicate.extractor()
                     
                     await self.request_reply_mesesage(update, response)

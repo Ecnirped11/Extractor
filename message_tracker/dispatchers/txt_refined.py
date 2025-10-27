@@ -2,9 +2,9 @@ import re
 from message_tracker.file_manager.sysfile_editor import FileManager
 from telegram import error
 from cloud.firebase import SenderMailDatabaseManager
+
 class RefinedTextHandler:
 
-    
     def __init__(self, text: str) -> str:
         self.text = text
         self.pattern = re.compile(
