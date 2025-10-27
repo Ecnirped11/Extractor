@@ -10,10 +10,8 @@ class SenderMailDatabaseManager:
         # Make sure Python can find the JSON no matter 
         self.sender_email = sender_email
         self.sender_username = sender_username
-
         # script_dir = os.path.dirname(os.path.abspath(__file__))
         # auth_file = os.path.join(script_dir, "serviceAccount.json")
-
         # if not os.path.exists(auth_file):
         #     raise FileNotFoundError(f"Cannot find {auth_file}!")
         # Initialize Firebase if not already initialized
