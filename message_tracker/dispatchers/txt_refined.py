@@ -24,7 +24,6 @@ class RefinedTextHandler:
             print(True)
         else:
             print(False)
-        
 
     def crop_out_content(self) -> str:
         match = self.pattern.search(self.text)
@@ -52,9 +51,4 @@ class RefinedTextHandler:
                     return f"An error occur: No data in the file to resolve"
             case "clear file":
                 sys_file = FileManager(None, None)
-                sys_file.clear_file()
-
-    
-            
-
-            
+                sys_file.clear_file()            

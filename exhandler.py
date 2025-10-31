@@ -44,12 +44,12 @@ class CheetahExtractor:
             context.user_data["is_exist"] = False
             is_exist = maiil_database_manager.is_exist()
             await self.request_reply_mesesage(update, is_exist)
-            
-
+        
         try:
             if text:
                 refined_text = RefinedTextHandler(text)
                 content = refined_text.crop_out_content()
+                #Action keyboard handler
                 match text:
                     case "resolve":
                         await self.request_reply_mesesage(update, content)
