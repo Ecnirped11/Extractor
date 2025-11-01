@@ -48,11 +48,16 @@ class CheetahExtractor:
         try:
             if text:
                 refined_text = RefinedTextHandler(text)
-                content = refined_text.crop_out_content()
-                #Action keyboard handler
+                match = refined_text.text_match()
+                btn_action = refined_text.btn_handler()
+                if match:
+                    content = refined_text.crop_out_content()
+                    await self.request_reply_mesesage(update, content)
+                
+                
                 match text:
                     case "resolve":
-                        await self.request_reply_mesesage(update, content)
+                        await self.request_reply_mesesage(update, btn_action)
                     case "clear file":
                         await self.request_reply_mesesage(update, "✅ File cleared successfully.")
                     case "Check Total Mail Stored":
@@ -101,5 +106,5 @@ class CheetahExtractor:
                 await self.request_reply_mesesage(update, "❗ Please send a valid .txt file.")
             
     def run_application(self) -> None:
-        print("\nBot is starting..")
+        # print("\nBot is starting..")
         self.application.run_polling()

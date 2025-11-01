@@ -21,13 +21,14 @@ class RefinedTextHandler:
                 extracted_content["email"], extracted_content["username"]
             )
             user_mail_dispatcher.push_data_information()
-            print(True)
         else:
-            print(False)
+            pass
 
+    def text_match(self) -> bool:
+        return  self.pattern.search(self.text)
+    
     def crop_out_content(self) -> str:
-        match = self.pattern.search(self.text)
-        
+        match = self.text_match()
         if match:
             extracted_content = {
                 "length": match.group("sid").strip(),
@@ -35,11 +36,19 @@ class RefinedTextHandler:
                 "message" : match.group("message").strip(),
                 "email": (match.group("email") or "").strip() or None,
             }
-            data = match.groupdict()
-            self.dispatch_user_mail(extracted_content, data)
             sys_file = FileManager(extracted_content, None)
-            sys_file.create_file()
+            registered_user = sys_file.is_registered()
+
+            if registered_user or not isinstance(extracted_content["email"], type(None)):
+                data = match.groupdict()
+                self.dispatch_user_mail(extracted_content, data)
+                sys_file.create_file()
+                return "<b>saved ✔️</b>"
+            else:
+                username = extracted_content["username"]
+                return f"⚠️ <b>Could\t'nt proceed the request @{username} is not registered</b>"
         
+    def btn_handler(self) -> str:
         match self.text:
             case "resolve":
                 try:

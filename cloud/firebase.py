@@ -7,14 +7,13 @@ from firebase_admin import credentials, db
 class SenderMailDatabaseManager:
 
     def __init__(self, sender_email: str, sender_username: str):
-        # Make sure Python can find the JSON no matter 
         self.sender_email = sender_email
         self.sender_username = sender_username
         # script_dir = os.path.dirname(os.path.abspath(__file__))
-        # auth_file = os.path.join(script_dir, "serviceAccount.json")
-        # if not os.path.exists(auth_file):
-        #     raise FileNotFoundError(f"Cannot find {auth_file}!")
-        # Initialize Firebase if not already initialized
+        # auth_dict = os.path.join(script_dir, "serviceAccount.json")
+        # if not os.path.exists(auth_dict):
+        #     raise FileNotFoundError(f"Cannot find {auth_dict}!")
+
         load_dotenv()
         auth_json = os.getenv("FIREBASE_AUTH_KEY")
         auth_dict = json.loads(auth_json)
@@ -26,10 +25,17 @@ class SenderMailDatabaseManager:
             firebase_admin.initialize_app(cred, {
                 'databaseURL': 'https://data-67a98-default-rtdb.firebaseio.com/'
             })
-        # Only now get a reference to the database
+        
         self.ref = db.reference("user-data")
         self.data = self.ref.get()
+        self.usernames = [user["username"] for key, user in self.data.items()]
 
+    def is_registered(self) -> bool:
+        if self.sender_username in self.usernames:
+            return True
+        else:
+            return False
+        
     def is_exist(self) -> bool:
         for key, user_data in self.data.items():
             if self.sender_username == user_data["username"]:

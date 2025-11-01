@@ -14,9 +14,10 @@ class FileManager:
         self.user_mail  = None
         self.duplicate_message_found = False
         self.command = command
+
         self.resolve_command = "resolve"
         self.extracted_content = ""
-    
+
     def enpack_text(self) -> dict:
         try:
             text_enpacked = self.file_content
@@ -31,6 +32,11 @@ class FileManager:
         except TypeError:
             pass
 
+    def is_registered(self) -> bool:
+        msg_collector = self.enpack_text()
+        data_administrator = SenderMailDatabaseManager(None, msg_collector["username"])
+        return data_administrator.is_registered()
+        
     def user_mail_collector(self, last_entry) -> None:
         """Fetches user mail from database or uses existing mail if present."""
         if last_entry["mail"] is None:
@@ -61,8 +67,6 @@ class FileManager:
         else:
             self.extracted_content = f"{last_entry['username']}[{last_entry['number_length']}]\n\n[{self.user_mail}]\n\n{user_msg}"
         
-        
-
     def create_file(self) -> None:
         extracted_message = self.enpack_text()
         try:
