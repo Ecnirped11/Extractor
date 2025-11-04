@@ -2,6 +2,7 @@
 from collections import Counter
 import os
 import re
+from .parser import NumberParser
 from utils import normalise
 
 class DuplicateExtractor:
@@ -61,15 +62,22 @@ class DuplicateExtractor:
             number_list = self.numbers_file_handler()
             testing_num = self.texting_number_hand(number_list)
             count = dict(Counter(number_list))
+            parser = NumberParser(number_list, self.file_path)
+            ultra_fetch_response = parser.extract_testing_number()
             message = ""
+
             self.duplicate_filter(number_list)
-            
             number_length = len(number_list) if len(number_list) > 0 else 0
 
             if True:  
                 message += (
                     f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
+                )    
+                message += (
+                    f"<b>✨ ULTRA_FETCH:</b>\n"
+                    f"\n<code>{ultra_fetch_response}</code>\n\n"
                 )
+        
                 if self.duplicates_found:
                     dup_list = list(self.duplicate_number)
                     

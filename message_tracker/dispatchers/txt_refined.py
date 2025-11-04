@@ -1,6 +1,8 @@
 import re
 from message_tracker.file_manager.sysfile_editor import FileManager
 from telegram import error
+from utils import filter
+import emoji
 from cloud.firebase import SenderMailDatabaseManager
 
 class RefinedTextHandler:
@@ -32,22 +34,28 @@ class RefinedTextHandler:
         if match:
             extracted_content = {
                 "length": match.group("sid").strip(),
-                "username" : match.group("user").strip(),
+                "username" : filter.text_filter(match.group("user").strip()),
                 "message" : match.group("message").strip(),
                 "email": (match.group("email") or "").strip() or None,
             }
             sys_file = FileManager(extracted_content, None)
             registered_user = sys_file.is_registered()
+            sid_value = sys_file.valid_sid_value()
 
-            if registered_user or not isinstance(extracted_content["email"], type(None)):
-                data = match.groupdict()
-                self.dispatch_user_mail(extracted_content, data)
-                sys_file.create_file()
-                return "<b>saved ✔️</b>"
+            if sid_value:
+                if registered_user or not isinstance(extracted_content["email"], type(None)):
+                    data = match.groupdict()
+                    self.dispatch_user_mail(extracted_content, data)
+                    sys_file.create_file()
+                    return "<b>saved ✔️</b>"
+                else:
+                    username = extracted_content["username"]
+                    return f"⚠️ Could\t'nt proceed the request @{username} is not registered"
             else:
-                username = extracted_content["username"]
-                return f"⚠️ <b>Could\t'nt proceed the request @{username} is not registered</b>"
-        
+                sid = extracted_content["length"]
+                return f"⚠️ Invalid SID value [ {sid} ]"
+
+            
     def btn_handler(self) -> str:
         match self.text:
             case "resolve":
@@ -58,6 +66,5 @@ class RefinedTextHandler:
                 
                 except error.BadRequest:
                     return f"An error occur: No data in the file to resolve"
-            case "clear file":
-                sys_file = FileManager(None, None)
-                sys_file.clear_file()            
+            case _:
+                pass

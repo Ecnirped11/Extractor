@@ -9,6 +9,7 @@ class SenderMailDatabaseManager:
     def __init__(self, sender_email: str, sender_username: str):
         self.sender_email = sender_email
         self.sender_username = sender_username
+        
         # script_dir = os.path.dirname(os.path.abspath(__file__))
         # auth_dict = os.path.join(script_dir, "serviceAccount.json")
         # if not os.path.exists(auth_dict):
@@ -17,13 +18,14 @@ class SenderMailDatabaseManager:
         load_dotenv()
         auth_json = os.getenv("FIREBASE_AUTH_KEY")
         auth_dict = json.loads(auth_json)
+        database_url = os.getenv("DatabaseUrl")
 
         auth_dict["private_key"] = auth_dict["private_key"].replace("\\n", "\n")
 
         if not firebase_admin._apps:
             cred = credentials.Certificate(auth_dict)
             firebase_admin.initialize_app(cred, {
-                'databaseURL': 'https://data-67a98-default-rtdb.firebaseio.com/'
+                'databaseURL': database_url
             })
         
         self.ref = db.reference("user-data")
@@ -31,14 +33,14 @@ class SenderMailDatabaseManager:
         self.usernames = [user["username"] for key, user in self.data.items()]
 
     def is_registered(self) -> bool:
-        if self.sender_username in self.usernames:
+        if (self.sender_username in self.usernames or any(name.startswith(self.sender_username) for name in self.usernames)):
             return True
         else:
             return False
         
     def is_exist(self) -> bool:
         for key, user_data in self.data.items():
-            if self.sender_username == user_data["username"]:
+            if self.sender_username == user_data["username"] or user_data["username"].startswith(self.sender_username):
                 user_mail = user_data["email"]
                 return (
                     f"\n\n<b>STATUS</b>: found!\n\n"
@@ -55,7 +57,11 @@ class SenderMailDatabaseManager:
         return len(mail)
 
     def extract_user_mail(self) -> str:
-        mail  = [mail["email"] for key, mail in self.data.items() if self.sender_username == mail["username"]]
+        mail  = [
+            mail["email"] 
+            for key, mail in self.data.items() 
+            if self.sender_username == mail["username"] or mail["username"].startswith(self.sender_username)
+        ]
         return mail[0]
 
     def check_existing_data(self) -> list:

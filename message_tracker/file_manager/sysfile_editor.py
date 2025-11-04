@@ -36,6 +36,15 @@ class FileManager:
         msg_collector = self.enpack_text()
         data_administrator = SenderMailDatabaseManager(None, msg_collector["username"])
         return data_administrator.is_registered()
+    
+    def valid_sid_value(self) -> bool:
+        msg_collector = self.enpack_text()
+
+        try:
+            if isinstance(int(msg_collector["number_length"]), int):
+                return True
+        except ValueError:
+            return False
         
     def user_mail_collector(self, last_entry) -> None:
         """Fetches user mail from database or uses existing mail if present."""
