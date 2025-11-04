@@ -41,8 +41,9 @@ class NumberParser:
                 for number in self.number_list for area_code in catched_area_code 
                 if number.startswith(area_code, 1) or number.startswith(area_code)
             ] 
+            slice_numbers = ultra_numbers[:5]
             ultra_fetch_response = "\n".join(
-                number for number in ultra_numbers
+                number for number in slice_numbers
             )
             return ultra_fetch_response           
         else:
