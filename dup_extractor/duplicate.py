@@ -17,10 +17,12 @@ class DuplicateExtractor:
         self.normalise = normalise  
         self.testing_number = []  
         self.duplicates_found = False
-    
+        
+
     def numbers_file_handler(self) -> list[int]:
         with open(self.file_path, "r", encoding="utf-8") as f:  
             phone_number_list = [self.normalise.normalize_number(line) for line in f if line.strip()]
+            self.number_list = phone_number_list
             return phone_number_list
             
     def texting_number_hand(self, number_list: list[int]) -> str:
@@ -56,6 +58,18 @@ class DuplicateExtractor:
             else:    
                 self.seen_numbers.add(phone_numbers)
     
+    def phone_number_formatter(self, number, parser) -> str:
+        phone_number = None
+        valid_usa_number = parser.validate_number_list()
+
+        if valid_usa_number:
+            phone_number = f"+{number}" if number.startswith("1") else f"+1{number}"
+        else:
+            phone_number = number
+        
+        return phone_number
+        
+    
     def extractor(self) -> str:
         
         try:
@@ -72,10 +86,16 @@ class DuplicateExtractor:
             if True:  
                 message += (
                     f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
-                )    
+                ) 
+                ultra_response = ultra_fetch_response["ultra_fetch_nums"]   
+                rest_number_sum = (
+                    f'♻️ <b>LEFT OVER[ultra fetch]:</b> {ultra_fetch_response["rest_num_sum"]}\n\n'
+                    if ultra_fetch_response else "\n\n"
+                )
                 message += (
                     f"<b>✨ ULTRA_FETCH:</b>\n"
-                    f"\n<code>{ultra_fetch_response}</code>\n\n"
+                    f"\n<code>{ultra_response}</code>\n\n"
+                    f"{rest_number_sum}"
                 )
         
                 if self.duplicates_found:
@@ -87,13 +107,14 @@ class DuplicateExtractor:
                     )
                 
                     duplicate = chr(10).join(
-                        f'{number} appeared {count[str(number)]} times' for number in self.duplicate_number
+                        f'{number} appeared {count[str(number)]} times' 
+                        for number in self.duplicate_number
                     )  
 
                     message += (
                         f"<b>⚠️ DUPLICATE NUMBER FOUND:</b>\n\n<pre>{duplicate}</pre>\n\n"
                         f"<b>📄 LINE NUMBER:</b>\n\n<pre>{dup_line}</pre>\n\n"
-                        f"<b>🔍 DUPLICATE FILTERED NUMBER:</b>\n\n<code>{chr(10).join(str(num) for num in dup_list)}</code>\n\n"
+                        f"<b>🔍 DUPLICATE FILTERED NUMBER:</b>\n\n<code>{chr(10).join(self.phone_number_formatter(num, parser) for num in dup_list)}</code>\n\n"
                     )
                 else:
                     message += (
@@ -103,7 +124,7 @@ class DuplicateExtractor:
                 if all([self.testing_number_found and testing_num["filtered_num_list"]]):
                     test_numbers = testing_num["test_num_details"]
                     filtered_test_numbers = chr(10).join(
-                        str(num) for num in testing_num["filtered_num_list"]
+                        self.phone_number_formatter(num, parser) for num in testing_num["filtered_num_list"]
                     )
                     
                     message += (

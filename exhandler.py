@@ -129,5 +129,4 @@ class CheetahExtractor:
                 await self.request_reply_mesesage(update, "❗ Please send a valid .txt file.")
             
     def run_application(self) -> None:
-        # print("\nBot is starting..")
         self.application.run_polling()
