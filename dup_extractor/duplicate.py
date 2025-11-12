@@ -2,6 +2,7 @@
 from collections import Counter
 import os
 import re
+from utils.truthy import is_truth
 from .parser import NumberParser
 from utils import normalise
 
@@ -71,7 +72,6 @@ class DuplicateExtractor:
         
     
     def extractor(self) -> str:
-        
         try:
             number_list = self.numbers_file_handler()
             testing_num = self.texting_number_hand(number_list)
@@ -87,17 +87,23 @@ class DuplicateExtractor:
                 message += (
                     f"<b>📞 PHONE NUMBER LENGTH: {number_length}</b>\n\n"
                 ) 
-                ultra_response = ultra_fetch_response["ultra_fetch_nums"]   
-                rest_number_sum = (
-                    f'♻️ <b>LEFT OVER[ultra fetch]:</b> {ultra_fetch_response["rest_num_sum"]}\n\n'
-                    if ultra_fetch_response else "\n\n"
-                )
-                message += (
-                    f"<b>✨ ULTRA_FETCH:</b>\n"
-                    f"\n<code>{ultra_response}</code>\n\n"
-                    f"{rest_number_sum}"
-                )
-        
+                if isinstance(ultra_fetch_response, dict):
+                    ultra_response = ultra_fetch_response["ultra_fetch_nums"]  
+                    rest_number_sum = (
+                        f'♻️ <b>LEFT OVER[ultra fetch]:</b> {ultra_fetch_response["rest_num_sum"]}\n\n'
+                        if ultra_fetch_response else "not found!\n\n"
+                    )
+                    message += (
+                        f"<b>✨ ULTRA_FETCH:</b>\n"
+                        f"\n<code>{ultra_response}</code>\n\n"
+                        f"{rest_number_sum}"
+                    )
+                elif isinstance(ultra_fetch_response, type(str)):
+                    message += (
+                        f"<b>✨ ULTRA_FETCH:</b>\n"
+                        f"\n<code>{ultra_fetch_response}</code>\n\n"
+                    )
+
                 if self.duplicates_found:
                     dup_list = list(self.duplicate_number)
                     
@@ -116,6 +122,7 @@ class DuplicateExtractor:
                         f"<b>📄 LINE NUMBER:</b>\n\n<pre>{dup_line}</pre>\n\n"
                         f"<b>🔍 DUPLICATE FILTERED NUMBER:</b>\n\n<code>{chr(10).join(self.phone_number_formatter(num, parser) for num in dup_list)}</code>\n\n"
                     )
+                
                 else:
                     message += (
                         f"<b>⚠️ DUPLICATE NUMBER FOUND:</b>\n\nNot Found\n\n"
@@ -131,9 +138,16 @@ class DuplicateExtractor:
                         f"<b>💡 TESTING NUMBER:</b>\n\n<code>{test_numbers}</code>\n\n"
                         f"<b>💡 FILTERED TESTING NUMBER:</b>\n\n<code>{filtered_test_numbers}</code>"
                     )
+                    is_truth(True)
                 else:
                     message += (
                         f"<b>💡 TESTING NUMBER:</b>\n\nNot Found\n\n"
+                    )
+                if not self.testing_number_found and not self.duplicates_found:
+                    message += (
+                        "<b>OPTIONAL NUMBER:</b>\n\n"
+                        f"First Index[F.I]: <code>{self.phone_number_formatter(number_list[0], parser)}</code>\n\n"
+                        f"Last Index[L.I]: <code>{self.phone_number_formatter(number_list[len(number_list) - 1], parser)}</code>"
                     )
                 os.remove(self.file_path)
                 return message

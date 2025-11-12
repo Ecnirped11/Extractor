@@ -14,7 +14,6 @@ class FileManager:
         self.user_mail  = None
         self.duplicate_message_found = False
         self.command = command
-
         self.resolve_command = "resolve"
         self.extracted_content = ""
 

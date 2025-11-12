@@ -1,4 +1,5 @@
 from collections import Counter
+from utils.truthy import is_truth
 import re
 import os
 
@@ -32,7 +33,7 @@ class NumberParser:
             for area_code, number in count.items() if number == 1
         ]
         return catched_area_code
-
+    
     def extract_testing_number(self) -> str:
         is_us_num = self.validate_number_list()
         catched_area_code = self.duplicate_area_code()
@@ -49,6 +50,7 @@ class NumberParser:
             ultra_fetch_response = "\n".join(
                 number for number in slice_numbers
             )
+            is_truth(True)
             return {
                 "ultra_fetch_nums": ultra_fetch_response, 
                 "rest_num_sum": invisible_number_sum
