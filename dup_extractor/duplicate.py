@@ -143,7 +143,7 @@ class DuplicateExtractor:
                     message += (
                         f"<b>💡 TESTING NUMBER:</b>\n\nNot Found\n\n"
                     )
-                if not self.testing_number_found and not self.duplicates_found:
+                if True:
                     message += (
                         "<b>OPTIONAL NUMBER:</b>\n\n"
                         f"First Index[F.I]: <code>{self.phone_number_formatter(number_list[0], parser)}</code>\n\n"

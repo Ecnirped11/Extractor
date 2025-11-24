@@ -1,4 +1,4 @@
 import emoji
 
-def text_filter(value) -> str:
-    return emoji.replace_emoji(value, replace="")
+def filter_emoji(value) -> str:
+    return emoji.replace_emoji(value, replace="").strip()

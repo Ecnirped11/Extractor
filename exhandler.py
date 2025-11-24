@@ -15,11 +15,13 @@ from cloud.firebase import SenderMailDatabaseManager
 class CheetahExtractor:
 
     def __init__(self, Acceess_token) -> None:   
+
         self.keyboard = [
-            ["resolve", "clear file"],
-            ["Check Total Mail Stored", "check user"]
+            ["🔧 resolve", "🗑️ clear data"],
+            ["🗂️ Total Mail ", "🔍👤 check user"],
+            ["📊 Total user data"]
         ]
-        self.file_manager = FileManager(None, None)
+        self.file_manager = FileManager(None, None, None)
         self.data_manager = SenderMailDatabaseManager(None, None)
         self.mark_up = ReplyKeyboardMarkup(
             self.keyboard, one_time_keyboard=False, resize_keyboard=True
@@ -39,12 +41,12 @@ class CheetahExtractor:
         await update.message.reply_text(f'You are welcome @{username}.', reply_markup=self.mark_up)
 
     async def clear_user_data(self, update: Update, context) -> str:
-        confirmation_auth = filter.text_filter(update.message.text)
+        confirmation_auth = filter.filter_emoji(update.message.text)
         match confirmation_auth:
             case "Y":
                 context.user_data["confirm"] = False
                 self.file_manager.clear_file()
-                return "✅ File cleared successfully."
+                return "✅ Data cleared successfully."
             case "N":
                 context.user_data["confirm"] = False
                 return "✅ Request terminated"
@@ -52,7 +54,7 @@ class CheetahExtractor:
                 return "⚠️invalid input"
     
     async def check_user_data(self, update: Update, context) -> str:
-        user_name = filter.text_filter(update.message.text)
+        user_name = filter.filter_emoji(update.message.text)
         maiil_database_manager = SenderMailDatabaseManager(None, user_name)
         context.user_data["is_exist"] = False
         return maiil_database_manager.is_exist()
@@ -62,7 +64,7 @@ class CheetahExtractor:
 
         if context.user_data.get("is_exist"):
             is_exist = await self.check_user_data(update, context)
-            await self.request_reply_mesesage(update, is_exist)
+            await self.request_reply_mesesage(update, f"<pre>{is_exist}</pre>")
 
         if context.user_data.get("confirm"):
             clear_data_res = await self.clear_user_data(update, context)
@@ -70,30 +72,40 @@ class CheetahExtractor:
 
         try:
             if text:
-                refined_text = RefinedTextHandler(text)
+                refined_text = RefinedTextHandler(filter.filter_emoji(text))
                 match = refined_text.text_match()
-                btn_action = refined_text.btn_handler()
+                content = refined_text.crop_out_content()
+
                 if match:
-                    content = refined_text.crop_out_content()
                     await self.request_reply_mesesage(update, content)
-                
-            match text:
-                case "resolve":
+
+                auto_format = bool(content)
+                if auto_format:
+                    btn_action = refined_text.btn_handler()
                     await self.request_reply_mesesage(update, btn_action)
-                case "clear file":
-                    context.user_data["confirm"] = True
-                    await self.request_reply_mesesage(update, "Confirm your request Y[proceed] / N[cancel]")
-                case "Check Total Mail Stored":
-                    mail_length = self.data_manager.check_stored_mail_length()
-                    await self.request_reply_mesesage(
-                        update,
-                        f"<b>Total user mail stored in database: <i>{mail_length}</i></b>"
-                    )
-                case "check user":
-                    context.user_data["is_exist"] = True
-                    await self.request_reply_mesesage(update, "Enter user the name")
-                case _:
-                    return ""
+
+                match filter.filter_emoji(text):
+                    case "resolve":
+                        btn_action = refined_text.btn_handler()
+                        await self.request_reply_mesesage(update, btn_action)
+                    case "clear data":
+                        context.user_data["confirm"] = True
+                        await self.request_reply_mesesage(update, "Confirm your request Y[proceed] / N[cancel]")
+                    case "Total Mail":
+                        mail_length = self.data_manager.check_stored_mail_length()
+                        await self.request_reply_mesesage(
+                            update,
+                            f"<b>Total user mail stored in database: <i>{mail_length}</i></b>"
+                        )
+                    case "check user":
+                        context.user_data["is_exist"] = True
+                        await self.request_reply_mesesage(update, "Enter user the name")
+                    
+                    case "Total user data":
+                        total_data_saved = self.file_manager.total_user_data()
+                        await self.request_reply_mesesage(update, f"<b>Total user data: {total_data_saved}</b>")
+                    case _:
+                        return ""
         except TimedOut:
             await update.message.reply_text("Error: unstable network..")
         except BadRequest:

@@ -5,11 +5,13 @@ import json
 
 class FileManager:
 
-    def __init__(self, refined_text, command):
+    def __init__(self, refined_text, command, auto_format_text):
         self.expand_dir = os.path.expanduser("~")
         self.file_path = os.path.join(self.expand_dir,  "extracted_message.txt")
         self.file_content = refined_text
         self.message_list = []
+        self.data_list = []
+        self.auto_format_text = auto_format_text
         self.total_number = 0
         self.user_mail  = None
         self.duplicate_message_found = False
@@ -31,6 +33,10 @@ class FileManager:
         except TypeError:
             pass
 
+    def data_file_handler(self) -> list:
+        with open(self.file_path,  "r", encoding="utf-8") as initial_contents:
+            return initial_contents.readlines()
+        
     def is_registered(self) -> bool:
         msg_collector = self.enpack_text()
         data_administrator = SenderMailDatabaseManager(None, msg_collector["username"])
@@ -38,13 +44,12 @@ class FileManager:
     
     def valid_sid_value(self) -> bool:
         msg_collector = self.enpack_text()
-
         try:
-            if isinstance(int(msg_collector["number_length"]), int):
-                return True
+            int(msg_collector["number_length"])
+            return True
         except ValueError:
             return False
-        
+
     def user_mail_collector(self, last_entry) -> None:
         """Fetches user mail from database or uses existing mail if present."""
         if last_entry["mail"] is None:
@@ -61,7 +66,7 @@ class FileManager:
 
         self.message_list = [msg["message"] for msg in parsed_data]
         check_duplicate_msg = dict(Counter(self.message_list))
-
+        
         duplicates_messages = [key for key, value in check_duplicate_msg.items() if value > 1]
         self.duplicate_message_found = bool(last_entry["message"] in duplicates_messages)
         user_msg = last_entry["message"]
@@ -78,16 +83,14 @@ class FileManager:
     def create_file(self) -> None:
         extracted_message = self.enpack_text()
         try:
-            if self.command != self.resolve_command:
+            if not self.auto_format_text:
                 with open(self.file_path, "a", encoding="utf-8") as file:
                     message = json.dumps(extracted_message) if os.stat(self.file_path).st_size == 0 else "," + json.dumps(extracted_message)
                     file.write(message)
-
-            elif self.command == self.resolve_command:
-                with open(self.file_path,  "r", encoding="utf-8") as initial_contents:
-                    list_values = initial_contents.readlines()
-                    self.edit_duplicate_message(list_values)
-                    
+    
+            elif  self.auto_format_text:
+                list_values = self.data_file_handler()
+                self.edit_duplicate_message(list_values)    
         except Exception as error:
             pass
 
@@ -95,6 +98,15 @@ class FileManager:
         with open(self.file_path, "w") as file:
             pass
 
+    def total_user_data(self) -> int:
+        try:
+            user_data = self.data_file_handler()
+            data = f"[{user_data[0]}]"
+            parsed_data = json.loads(data)
+            return len(parsed_data)
+        except IndexError:
+            return 0
+    
     def output_extracted_content(self) -> str:
         return self.extracted_content
     

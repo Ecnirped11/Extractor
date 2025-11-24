@@ -13,6 +13,9 @@ class RefinedTextHandler:
             r"USER:\s*(?P<user>.*?)\n\s*(?:EMAIL:\s*(?P<email>.*?)\n\s*)?SID:\s*(?P<sid>.*)\n\s*PHONE:\s*(?P<phone>.*)\n\s*Message:\s*(?P<message>.*?)(?:\n\s*Image:|$)",
             re.DOTALL
         )
+        self.valid_sid = None
+
+        self.auto_format_text = False
         self.sender_mails = SenderMailDatabaseManager(None, None)
 
     def dispatch_user_mail(self, extracted_content: dict, data: dict) -> dict:
@@ -34,20 +37,22 @@ class RefinedTextHandler:
         if match:
             extracted_content = {
                 "length": match.group("sid").strip(),
-                "username" : filter.text_filter(match.group("user").strip()),
+                "username" : filter.filter_emoji(match.group("user").strip()),
                 "message" : match.group("message").strip(),
                 "email": (match.group("email") or "").strip() or None,
             }
-            sys_file = FileManager(extracted_content, None)
+            sys_file = FileManager(extracted_content, None, self.auto_format_text)
             registered_user = sys_file.is_registered()
             sid_value = sys_file.valid_sid_value()
+            self.valid_sid  = sid_value
 
             if sid_value:
                 if registered_user or not isinstance(extracted_content["email"], type(None)):
                     data = match.groupdict()
                     self.dispatch_user_mail(extracted_content, data)
+                    self.auto_format_text = True
                     sys_file.create_file()
-                    return "<b>saved ✔️</b>"
+                    return "saved ✔️"
                 else:
                     username = extracted_content["username"]
                     return f"⚠️ Could\t'nt proceed the request @{username} is not registered"
@@ -57,14 +62,15 @@ class RefinedTextHandler:
 
             
     def btn_handler(self) -> str:
-        match self.text:
-            case "resolve":
-                try:
-                    sys_file = FileManager(None, self.text)
-                    sys_file.create_file()
-                    return sys_file.output_extracted_content()
-                
-                except error.BadRequest:
-                    return f"An error occur: No data in the file to resolve"
-            case _:
-                pass
+        
+        if self.valid_sid and self.auto_format_text  or self.text == "resolve":
+            try:
+                self.auto_format_text = True
+                sys_file = FileManager(None, self.text, self.auto_format_text)
+                sys_file.create_file()
+                return sys_file.output_extracted_content()
+            except error.BadRequest:
+                return f"An error occur: No data in the file to resolve"
+        else:
+            return "<pre><b>💬 SID SHOULD BE AN INTEGER</b></pre>"
+        

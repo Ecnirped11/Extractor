@@ -22,5 +22,6 @@ def main():
         extractor_bot.run_application()
     except Exception as error:
         logging.exception("Bot failed to start:")
+        
 if __name__ == "__main__":
     main()

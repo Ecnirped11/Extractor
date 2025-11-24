@@ -43,13 +43,13 @@ class SenderMailDatabaseManager:
             if self.sender_username == user_data["username"] or user_data["username"].startswith(self.sender_username):
                 user_mail = user_data["email"]
                 return (
-                    f"\n\n<b>STATUS</b>: found!\n\n"
-                    f"<b>USERNAME</b>: {self.sender_username}\n\n"
-                    f"<b>EMAIL: </b> [<i>{user_mail}</i>]\n\n"
+                    f"<b>🟢 STATUS</b>: found!\n\n"
+                    f"<b>👤 USERNAME</b>: {self.sender_username}\n\n"
+                    f"<b>✉️ EMAIL: </b> [<i>{user_mail}</i>]\n\n"
                 )
         return (
-            f"\n\n<b>STATUS</b>: not found!\n\n"
-            f"<b>MESSAGE</b>:couldn't found user [{self.sender_username}] data.\n\n"
+            f"<b>🔴 STATUS</b>: not found!\n\n"
+            f"<b>💬 MESSAGE</b>: couldn't found user [{self.sender_username}] data.\n\n"
         )
             
     def check_stored_mail_length(self) -> str:

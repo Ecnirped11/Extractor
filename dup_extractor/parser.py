@@ -52,7 +52,7 @@ class NumberParser:
             )
             is_truth(True)
             return {
-                "ultra_fetch_nums": ultra_fetch_response, 
+                "ultra_fetch_nums": ultra_fetch_response if len(ultra_fetch_response) >= 1 else "Not Found!", 
                 "rest_num_sum": invisible_number_sum
             }          
         else:
