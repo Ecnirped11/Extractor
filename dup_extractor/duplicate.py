@@ -13,8 +13,8 @@ class DuplicateExtractor:
         self.file_path = file_path
         self.testing_number_found = False
         self.seen_numbers = set()  
-        self.duplicate_number = set()  
-        self.data = []  
+        self.duplicate_number = set()
+        self.data = []
         self.normalise = normalise  
         self.testing_number = []  
         self.duplicates_found = False
@@ -136,7 +136,7 @@ class DuplicateExtractor:
                     
                     message += (
                         f"<b>💡 TESTING NUMBER:</b>\n\n<code>{test_numbers}</code>\n\n"
-                        f"<b>💡 FILTERED TESTING NUMBER:</b>\n\n<code>{filtered_test_numbers}</code>"
+                        f"<b>💡 FILTERED TESTING NUMBER:</b>\n\n<code>{filtered_test_numbers}</code>\n\n"
                     )
                     is_truth(True)
                 else:
