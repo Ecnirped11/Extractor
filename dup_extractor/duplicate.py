@@ -1,4 +1,3 @@
-
 from collections import Counter
 import os
 import re
@@ -19,7 +18,6 @@ class DuplicateExtractor:
         self.testing_number = []  
         self.duplicates_found = False
         
-
     def numbers_file_handler(self) -> list[int]:
         with open(self.file_path, "r", encoding="utf-8") as f:  
             phone_number_list = [self.normalise.normalize_number(line) for line in f if line.strip()]
@@ -50,7 +48,7 @@ class DuplicateExtractor:
             else:
                 self.testing_number_found = False
                 return "Not found!"
-            
+
     def duplicate_filter(self, number_list: list[int]) -> None:
         for phone_numbers in number_list:  
             if phone_numbers in self.seen_numbers:  
@@ -70,7 +68,6 @@ class DuplicateExtractor:
         
         return phone_number
         
-    
     def extractor(self) -> str:
         try:
             number_list = self.numbers_file_handler()
