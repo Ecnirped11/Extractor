@@ -106,7 +106,7 @@ class CheetahExtractor:
                         await self.request_reply_mesesage(update, f"<b>Total user data: {total_data_saved}</b>")
                     case _:
                         return ""
-        except jff:
+        except TimedOut:
             await update.message.reply_text("Error: unstable network..")
         except BadRequest:
             await self.request_reply_mesesage(update, "<b>An error occur due to Bad request</b>")
