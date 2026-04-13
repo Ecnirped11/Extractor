@@ -10,17 +10,17 @@ class SenderMailDatabaseManager:
         self.sender_email = sender_email
         self.sender_username = sender_username
         
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        auth_dict = os.path.join(script_dir, "serviceAccount.json")
-        if not os.path.exists(auth_dict):
-            raise FileNotFoundError(f"Cannot find {auth_dict}!")
+        # script_dir = os.path.dirname(os.path.abspath(__file__))
+        # auth_dict = os.path.join(script_dir, "serviceAccount.json")
+        # if not os.path.exists(auth_dict):
+        #     raise FileNotFoundError(f"Cannot find {auth_dict}!")
 
         load_dotenv()
-        # auth_json = os.getenv("FIREBASE_AUTH_KEY")
-        # auth_dict = json.loads(auth_json)
+        auth_json = os.getenv("FIREBASE_AUTH_KEY")
+        auth_dict = json.loads(auth_json)
         database_url = os.getenv("DatabaseUrl")
 
-        # auth_dict["private_key"] = auth_kzdict["private_key"].replace("\\n", "\n")
+        auth_dict["private_key"] = auth_dict["private_key"].replace("\\n", "\n")
 
         if not firebase_admin._apps:
             cred = credentials.Certificate(auth_dict)
